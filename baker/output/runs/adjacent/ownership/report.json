@@ -1,0 +1,32 @@
+{
+  "size": 256,
+  "policy": "ownership",
+  "outerDistance": 0.4,
+  "innerDistance": 0.4,
+  "triangles": {
+    "low": 3136,
+    "high": 3136
+  },
+  "parts": [
+    "default",
+    "box_left",
+    "box_right"
+  ],
+  "counts": {
+    "hit": 49220,
+    "miss": 0,
+    "conflict": 0,
+    "outside_uv": 16316,
+    "degenerate": 0
+  },
+  "protectedTexels": 0,
+  "coveredTexels": 49220,
+  "hitRate": 1,
+  "cleanRate": 1,
+  "conflictRate": 0,
+  "missRate": 0,
+  "elapsedMs": 166,
+  "reasonSamples": {
+    "ok": 49220
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "nearest": {
+    "counts": {
+      "hit": 52900,
+      "miss": 0,
+      "conflict": 0,
+      "outside_uv": 12636,
+      "degenerate": 0
+    },
+    "reasons": {
+      "ok": 52900
+    }
+  },
+  "ownership": {
+    "counts": {
+      "hit": 52900,
+      "miss": 0,
+      "conflict": 0,
+      "outside_uv": 12636,
+      "degenerate": 0
+    },
+    "reasons": {
+      "part_override": 52900
+    }
+  },
+  "texelChoiceDifferences": 0,
+  "backfacePenetrationsFixed": 0,
+  "partOwnershipProtections": 52900
+}

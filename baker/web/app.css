@@ -1,0 +1,108 @@
+:root {
+  --bg: #14161c;
+  --panel: #1d2029;
+  --panel2: #252a36;
+  --line: #333a49;
+  --text: #e6e9f0;
+  --muted: #97a0b3;
+  --accent: #5b8cff;
+  --good: #34d399;
+  --warn: #f5b544;
+  --bad: #ef5b5b;
+  --purple: #b457e6;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+header { padding: 20px 28px 8px; }
+header h1 { margin: 0; font-size: 22px; }
+.sub { color: var(--muted); margin: 4px 0 0; font-size: 13px; }
+
+main {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 18px;
+  padding: 16px 28px 28px;
+  align-items: start;
+}
+@media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+}
+.panel h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 18px 0 10px; }
+.panel h2:first-child { margin-top: 0; }
+
+label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+label.inline { display: inline; margin: 0; }
+input[type="file"], select, input[type="range"] { width: 100%; margin-top: 4px; }
+select, input[type="file"] {
+  background: var(--panel2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 8px; padding: 7px 9px; font-size: 13px;
+}
+input[type="range"] { accent-color: var(--accent); }
+output { color: var(--accent); font-weight: 600; }
+
+.file-row { margin-bottom: 12px; }
+.hint { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; word-break: break-all; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+button {
+  background: var(--accent); color: #0b1020; border: none; border-radius: 8px;
+  padding: 9px 14px; font-weight: 700; cursor: pointer; font-size: 13px;
+}
+button:hover:not(:disabled) { filter: brightness(1.1); }
+button:disabled { background: #3a4150; color: #8a93a6; cursor: not-allowed; }
+#bakeBtn { width: 100%; padding: 12px; font-size: 15px; margin-top: 6px; }
+#loadDemo, #saveConfig, #exportPng { background: var(--panel2); color: var(--text); border: 1px solid var(--line); }
+
+.status { margin-top: 10px; font-size: 13px; color: var(--muted); min-height: 20px; }
+.status.ok { color: var(--good); }
+.status.err { color: var(--bad); }
+.status.work { color: var(--warn); }
+
+.metrics {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px;
+}
+.metrics div {
+  background: var(--panel2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 6px; text-align: center;
+}
+.metrics span { display: block; font-size: 18px; font-weight: 700; }
+.metrics label { font-size: 11px; margin: 2px 0 0; color: var(--muted); }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.tab {
+  background: var(--panel2); color: var(--muted); border: 1px solid var(--line);
+  padding: 7px 11px; border-radius: 8px; font-weight: 600;
+}
+.tab.active { background: var(--accent); color: #0b1020; border-color: var(--accent); }
+
+.canvas-wrap {
+  position: relative; background: #0c0e13; border: 1px solid var(--line);
+  border-radius: 10px; min-height: 384px; display: flex; align-items: center; justify-content: center;
+}
+canvas { max-width: 100%; image-rendering: pixelated; }
+.hidden { display: none !important; }
+.caption { color: var(--muted); font-size: 12px; margin: 8px 2px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.legend .key { display: inline-flex; align-items: center; gap: 5px; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+.render-controls { display: flex; gap: 16px; align-items: flex-end; margin-top: 12px; flex-wrap: wrap; }
+.render-controls label { margin: 0; }
+.render-controls select { width: auto; }
+.render-controls input[type="checkbox"] { width: auto; accent-color: var(--accent); }
+
+footer { padding: 0 28px 28px; color: var(--muted); font-size: 12px; }
+code { background: var(--panel2); padding: 1px 5px; border-radius: 4px; }

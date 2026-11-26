@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>几何细节烘焙器</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header>
+  <h1>几何细节烘焙器</h1>
+  <p class="sub">高模表面信息 → 带 UV 低模 · 切线空间法线 + 显式距离 · 真实投射诊断</p>
+</header>
+
+<main>
+  <section class="panel controls">
+    <h2>1. 选择模型</h2>
+    <div class="file-row">
+      <label>低模（含 UV）
+        <input type="file" id="lowFile" accept=".obj">
+      </label>
+      <span id="lowInfo" class="hint">未选择</span>
+    </div>
+    <div class="file-row">
+      <label>高模
+        <input type="file" id="highFile" accept=".obj">
+      </label>
+      <span id="highInfo" class="hint">未选择</span>
+    </div>
+    <div class="file-row">
+      <button id="loadDemo" type="button">载入内置测试场景</button>
+      <select id="demoScene">
+        <option value="groove">深凹槽平板</option>
+        <option value="shell">薄壳（内外两层）</option>
+        <option value="adjacent">相邻分离零件</option>
+        <option value="fold">折回薄件（nearest 穿透对照）</option>
+      </select>
+    </div>
+
+    <h2>2. 烘焙参数</h2>
+    <div class="grid2">
+      <label>贴图尺寸
+        <select id="size">
+          <option>64</option>
+          <option selected>128</option>
+          <option>256</option>
+        </select>
+      </label>
+      <label>命中选择
+        <select id="policy">
+          <option value="ownership" selected>按部件归属（保护薄件背面）</option>
+          <option value="nearest">按射线最近点（不防跨部件）</option>
+        </select>
+      </label>
+      <label>外笼距离 <output id="outerVal">0.40</output>
+        <input type="range" id="outer" min="0.05" max="1.2" step="0.01" value="0.4">
+      </label>
+      <label>内笼距离 <output id="innerVal">0.40</output>
+        <input type="range" id="inner" min="0.05" max="1.2" step="0.01" value="0.4">
+      </label>
+    </div>
+
+    <button id="bakeBtn" type="button" disabled>烘焙</button>
+    <div id="status" class="status">请先选择高低模</div>
+
+    <h2>3. 配置</h2>
+    <div class="file-row">
+      <button id="saveConfig" type="button" disabled>保存配置 JSON</button>
+      <label class="inline">载入配置
+        <input type="file" id="configFile" accept=".json">
+      </label>
+    </div>
+  </section>
+
+  <section class="panel results">
+    <h2>结果区：贴图细节与投射偏差</h2>
+    <div id="metrics" class="metrics hidden">
+      <div><span id="mHit">–</span><label>干净命中</label></div>
+      <div><span id="mConflict">–</span><label>冲突</label></div>
+      <div><span id="mMiss">–</span><label>未命中</label></div>
+      <div><span id="mProtected">–</span><label>归属保护</label></div>
+      <div><span id="mClean">–</span><label>正确率</label></div>
+      <div><span id="mAny">–</span><label>命中率</label></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-layer="normal">法线</button>
+      <button class="tab" data-layer="distance">距离</button>
+      <button class="tab" data-layer="signed">带符号距离</button>
+      <button class="tab" data-layer="status">诊断状态</button>
+      <button class="tab" data-layer="protected">归属保护层</button>
+      <button class="tab" data-layer="render">低模渲染</button>
+      <button class="tab" data-layer="debug">投射/笼体</button>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="texCanvas" width="384" height="384"></canvas>
+      <canvas id="renderCanvas" width="384" height="384" class="hidden"></canvas>
+      <canvas id="debugCanvas" width="384" height="384" class="hidden"></canvas>
+    </div>
+    <p id="layerCaption" class="caption"></p>
+
+    <div class="legend" id="legend"></div>
+
+    <div class="render-controls hidden" id="renderControls">
+      <label>视角
+        <select id="view">
+          <option value="iso" selected>斜视</option>
+          <option value="front">正视</option>
+          <option value="side">侧视</option>
+          <option value="top">俯视</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="flatToggle"> 关闭法线贴图（对照）</label>
+      <button id="exportPng" type="button">导出当前图 PNG</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  图形界面按钮直接调用 <code>src/baker.js</code> 的几何烘焙实现；命令行（<code>src/cli.js</code>）仅作批量辅助。
+</footer>
+
+<script src="../src/math.js"></script>
+<script src="../src/mesh.js"></script>
+<script src="../src/raycast.js"></script>
+<script src="../src/baker.js"></script>
+<script src="../src/image.js"></script>
+<script src="../src/render.js"></script>
+<script src="demo-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

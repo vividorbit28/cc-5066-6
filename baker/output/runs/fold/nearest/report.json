@@ -1,0 +1,31 @@
+{
+  "size": 256,
+  "policy": "nearest",
+  "outerDistance": 0.4,
+  "innerDistance": 0.4,
+  "triangles": {
+    "low": 800,
+    "high": 4096
+  },
+  "parts": [
+    "default",
+    "skin"
+  ],
+  "counts": {
+    "hit": 0,
+    "miss": 0,
+    "conflict": 52900,
+    "outside_uv": 12636,
+    "degenerate": 0
+  },
+  "protectedTexels": 0,
+  "coveredTexels": 52900,
+  "hitRate": 0,
+  "cleanRate": 0,
+  "conflictRate": 1,
+  "missRate": 0,
+  "elapsedMs": 118,
+  "reasonSamples": {
+    "cross_part_nearest": 52900
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "geometry-detail-baker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ray-cast geometry baker: tangent-space normals and explicit distance from a high mesh onto a UV low mesh, with part-ownership hit selection and full diagnostics.",
+  "scripts": {
+    "models": "node test/make_models.js",
+    "test": "node test/validate.js",
+    "test:gui": "node test/gui-dom-test.js",
+    "all": "node test/all.js",
+    "serve": "node tools/serve.js",
+    "bake": "node src/cli.js"
+  },
+  "license": "MIT"
+}
