@@ -5,7 +5,12 @@
   "description": "Ray-cast geometry baker: tangent-space normals and explicit distance from a high mesh onto a UV low mesh, with part-ownership hit selection and full diagnostics.",
   "scripts": {
     "models": "node test/make_models.js",
+    "sample": "node test/make_maintenance_sample.js",
     "test": "node test/validate.js",
+    "validate:maintenance": "node test/validate-maintenance.js",
+    "validate:assets": "node test/validate-bake-assets.js",
+    "validate:bake": "node test/validate-bake-assets.js",
+    "check": "node test/validate.js && node test/validate-maintenance.js && node test/validate-bake-assets.js && node test/gui-dom-test.js",
     "test:gui": "node test/gui-dom-test.js",
     "all": "node test/all.js",
     "serve": "node tools/serve.js",

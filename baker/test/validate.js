@@ -5,7 +5,7 @@
 // part-ownership protection, and success-vs-correct correspondence.
 const assert = require('assert');
 const { V } = require('../src/math');
-const { Mesh } = require('../src/mesh');
+const { Mesh, parseOBJ } = require('../src/mesh');
 const { BVH } = require('../src/raycast');
 const { bake, rasterizeUV, selectHit, buildCage } = require('../src/baker');
 const { grooveScene, shellScene, adjacentScene, foldScene } = require('./make_models');
@@ -52,6 +52,21 @@ test('back-side ray is flagged not front-facing', () => {
   const bvh = new BVH(singleTriMesh());
   const hits = bvh.castAll([0.2, 0.2, 1], [0, 0, -1], 0, 10);
   assert.strictEqual(hits[0].frontFacing, false);
+});
+
+test('two bare same-name object declarations keep distinct stable ids', () => {
+  const text = [
+    'o screw',
+    'v 0 0 0', 'v 1 0 0', 'v 0 1 0',
+    'vt 0 0',
+    'f 1/1 2/1 3/1',
+    'o screw',
+    'f 1/1 3/1 2/1',
+  ].join('\n');
+  const m = parseOBJ(text);
+  assert.deepStrictEqual(m.partNames, ['screw', 'screw']);
+  assert.deepStrictEqual(m.partIds, ['screw', 'screw_2']);
+  assert.deepStrictEqual(m.facePart, [0, 1]);
 });
 
 test('barycentric coordinates sum to one', () => {

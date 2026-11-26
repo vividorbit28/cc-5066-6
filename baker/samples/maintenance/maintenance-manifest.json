@@ -1,0 +1,232 @@
+{
+  "schema": "geometry-baker/maintenance-part-set/v1",
+  "projectionRules": "./projection-maintenance.json",
+  "conventions": {
+    "cage": "p_outer = p + N * outerDistance; p_inner = p - N * innerDistance",
+    "rayDirection": "inner_to_outer",
+    "rayDirectionFormula": "normalize(cageOuterPoint - cageInnerPoint)",
+    "projectionFacing": "dot(hit.geometricNormal, rayDirection) >= 0",
+    "projectionFacingNote": "This is source-normal alignment with outward projection, not the ray-origin side used by real-time face culling.",
+    "exampleWinding": "shell_outer normals point radially outward; shell_inner normals face the cavity/axis and therefore align negatively with the outward ray.",
+    "tangentNormal": "OpenGL-style +Z neutral; RGB = xyz * 0.5 + 0.5",
+    "tangentMatrix": "worldToTangent is column-major and M.mulVec yields dot(T/B/N, worldVector)",
+    "uvTexelRow": "buffer/py 0 is v=0 in this baker and its software renderer"
+  },
+  "bake": {
+    "size": 96,
+    "outerDistance": 0.2,
+    "innerDistance": 0.2,
+    "policy": "ownership",
+    "normalErrorMaxDegrees": 2,
+    "requiredStablePartIds": [
+      "screw_a",
+      "screw_b",
+      "shroud_left",
+      "shroud_right"
+    ],
+    "duplicateLabel": "螺钉",
+    "legacySplitPartIds": [
+      "shroud_left",
+      "shroud_right"
+    ],
+    "expectedRenameSourceChanges": 0,
+    "expectedSplitFirstChange": {
+      "px": 52,
+      "py": 33,
+      "index": 3220,
+      "partId": "cover_left",
+      "afterPartId": "cover_left"
+    },
+    "rogue": {
+      "lowPartId": "cover_rogue",
+      "forbiddenSourcePartId": "rail_back",
+      "requiredReason": "backface_only",
+      "withheldTexture": "cover"
+    }
+  },
+  "files": {
+    "baseline": {
+      "low": "assembly_low.obj",
+      "high": "assembly_high.obj"
+    },
+    "renamed": {
+      "low": "renamed_low.obj",
+      "high": "renamed_high.obj"
+    },
+    "split": {
+      "low": "split_low.obj",
+      "high": "split_high.obj"
+    },
+    "rogue": {
+      "low": "rogue_low.obj",
+      "high": "rogue_high.obj"
+    }
+  },
+  "partRulesByVariant": {
+    "baseline": {
+      "screw_a": {
+        "accept": [
+          "screw_a"
+        ],
+        "texture": "screw_a"
+      },
+      "screw_b": {
+        "accept": [
+          "screw_b"
+        ],
+        "texture": "screw_b"
+      },
+      "shroud_left": {
+        "accept": [
+          "shroud_left"
+        ],
+        "texture": "shroud"
+      },
+      "shroud_right": {
+        "accept": [
+          "shroud_right"
+        ],
+        "texture": "shroud"
+      },
+      "bracket": {
+        "accept": [
+          "bracket"
+        ],
+        "texture": "bracket"
+      },
+      "cover": {
+        "accept": [
+          "cover"
+        ],
+        "texture": "cover"
+      }
+    },
+    "renamed": {
+      "screw_a": {
+        "accept": [
+          "screw_a"
+        ],
+        "texture": "screw_a"
+      },
+      "screw_b": {
+        "accept": [
+          "screw_b"
+        ],
+        "texture": "screw_b"
+      },
+      "shroud_left": {
+        "accept": [
+          "shroud_left"
+        ],
+        "texture": "shroud"
+      },
+      "shroud_right": {
+        "accept": [
+          "shroud_right"
+        ],
+        "texture": "shroud"
+      },
+      "bracket": {
+        "accept": [
+          "bracket"
+        ],
+        "texture": "bracket"
+      },
+      "cover": {
+        "accept": [
+          "cover"
+        ],
+        "texture": "cover"
+      }
+    },
+    "split": {
+      "screw_a": {
+        "accept": [
+          "screw_a"
+        ],
+        "texture": "screw_a"
+      },
+      "screw_b": {
+        "accept": [
+          "screw_b"
+        ],
+        "texture": "screw_b"
+      },
+      "shroud_left": {
+        "accept": [
+          "shroud_left"
+        ],
+        "texture": "shroud"
+      },
+      "shroud_right": {
+        "accept": [
+          "shroud_right"
+        ],
+        "texture": "shroud"
+      },
+      "bracket": {
+        "accept": [
+          "bracket"
+        ],
+        "texture": "bracket"
+      },
+      "cover_left": {
+        "accept": [
+          "cover_left"
+        ],
+        "texture": "cover_left"
+      },
+      "cover_right": {
+        "accept": [
+          "cover_right"
+        ],
+        "texture": "cover_right"
+      }
+    },
+    "rogue": {
+      "screw_a": {
+        "accept": [
+          "screw_a"
+        ],
+        "texture": "screw_a"
+      },
+      "screw_b": {
+        "accept": [
+          "screw_b"
+        ],
+        "texture": "screw_b"
+      },
+      "shroud_left": {
+        "accept": [
+          "shroud_left"
+        ],
+        "texture": "shroud"
+      },
+      "shroud_right": {
+        "accept": [
+          "shroud_right"
+        ],
+        "texture": "shroud"
+      },
+      "bracket": {
+        "accept": [
+          "bracket"
+        ],
+        "texture": "bracket"
+      },
+      "cover_rogue": {
+        "accept": [
+          "cover"
+        ],
+        "texture": "cover"
+      }
+    }
+  },
+  "notes": [
+    "screw_a and screw_b intentionally share the display label 螺钉.",
+    "shroud_left and shroud_right are the legacy project already-split shroud.",
+    "A rename changes partNames only; partIds and projection sources stay stable.",
+    "A real split changes partIds/rules; affected texels must claim the new source.",
+    "The rogue variant removes the legal cover and leaves only rail_back, facing away from the ray."
+  ]
+}

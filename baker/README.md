@@ -39,10 +39,11 @@ src/        核心实现（UMD，Node 与浏览器共用同一份代码）
   runner.js   批量烘焙、贴图/调试/渲染/报告导出
   cli.js      命令行（辅助）
 web/        图形界面（主要入口），调用同一个 src/*.js
-test/       测试模型生成、30 项断言、GUI 工作流测试
+test/       模型生成、几何/策略核心断言、维护规则校验、净目录资料校验、jsdom GUI 工作流
+samples/    可重新烘焙的维护部件集（同名螺钉、拆分罩壳、重命名/拆分/rogue 变体）
 tools/      本地静态服务器
 doc/        使用文档
-output/     模型、各场景烘焙产物（贴图、渲染、命中几何、JSON 报告）
+output/     模型、各场景烘焙产物（贴图、渲染、命中几何、JSON 报告与 SHA-256 清单）
 ```
 
 ## 快速开始
@@ -50,8 +51,18 @@ output/     模型、各场景烘焙产物（贴图、渲染、命中几何、JS
 图形界面入口与完整说明见 **[doc/usage.md](doc/usage.md)**。
 
 ```bash
-npm run all      # 生成测试模型、跑全部断言与 GUI 工作流、产出 256px 烘焙结果
-npm run serve    # 启动后浏览器打开图形界面
+npm run all                  # 生成样例、全部校验、GUI 工作流，并产出 256px 烘焙结果
+npm run serve                # 启动本地服务后打开 web/index.html（主要图形入口）
+
+npm run sample               # 只重新生成 samples/maintenance 可重烘部件集
+npm run validate:maintenance # 投射身份、重命名/拆分、rogue 背面、扣留发布检查
+npm run validate:assets      # 在系统临时净目录重烘并核对 SHA-256 清单，拒绝伪报/陈旧文件
+npm run test:gui             # jsdom 中真实选择 OBJ、点击烘焙并检查异常/图层
 ```
 
-无第三方运行时依赖，仅使用 Node 内置模块；浏览器端无需构建步骤。
+图形界面可直接选择本地低模与高模 OBJ，也可载入维护部件集/rogue 场景；运行状态、
+贴图细节异常、法线误差/投射偏差、未知对应区域和身份不一致计数都会显示在窗口中。
+命令行只作为批量与 CI 辅助，参数约定见 **[doc/usage.md](doc/usage.md)**。
+
+无第三方运行时依赖，仅使用 Node 内置模块；浏览器端无需构建步骤。GUI 自动化测试在
+找不到仓库内 `jsdom` 时会尝试 `/tmp/pwtest/node_modules/jsdom`。

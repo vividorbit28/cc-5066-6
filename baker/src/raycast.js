@@ -155,6 +155,9 @@ class BVH {
       // groove-wall hits stable under floating-point error.
       frontFacing: V.dot(n, dir) >= -1e-4,
       part: this.mesh.facePart[faceIdx] ?? 0,
+      partId: this.mesh.partIds?.[this.mesh.facePart[faceIdx] ?? 0] ??
+        this.mesh.partNames?.[this.mesh.facePart[faceIdx] ?? 0] ??
+        `part_${this.mesh.facePart[faceIdx] ?? 0}`,
     };
   }
 }

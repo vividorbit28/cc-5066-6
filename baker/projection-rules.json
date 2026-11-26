@@ -1,0 +1,74 @@
+{
+  "schema": "geometry-baker/projection-rules/v1",
+  "conventions": {
+    "cage": "p_outer = p + N * outerDistance; p_inner = p - N * innerDistance",
+    "rayDirection": "inner_to_outer",
+    "rayDirectionFormula": "normalize(cageOuterPoint - cageInnerPoint)",
+    "projectionFacing": "dot(hit.geometricNormal, rayDirection) >= 0",
+    "projectionFacingNote": "This is source-normal alignment with outward projection, not the ray-origin side used by real-time face culling.",
+    "exampleWinding": "shell_outer normals point radially outward; shell_inner normals face the cavity/axis and therefore align negatively with the outward ray.",
+    "tangentNormal": "OpenGL-style +Z neutral; RGB = xyz * 0.5 + 0.5",
+    "tangentMatrix": "worldToTangent is column-major and M.mulVec yields dot(T/B/N, worldVector)",
+    "uvTexelRow": "buffer/py 0 is v=0 in this baker and its software renderer"
+  },
+  "implementationDefaults": {
+    "size": 256,
+    "outerDistance": 0.5,
+    "innerDistance": 0.5,
+    "policy": "ownership",
+    "smoothHighNormals": true
+  },
+  "guiPreset": {
+    "size": 128,
+    "outerDistance": 0.4,
+    "innerDistance": 0.4,
+    "policy": "ownership"
+  },
+  "deliverableBake": {
+    "size": 256,
+    "outerDistance": 0.4,
+    "innerDistance": 0.4,
+    "policies": ["nearest", "ownership"]
+  },
+  "maintenanceSample": {
+    "size": 96,
+    "outerDistance": 0.2,
+    "innerDistance": 0.2,
+    "policy": "ownership",
+    "normalErrorMaxDegrees": 2,
+    "requiredStablePartIds": [
+      "screw_a",
+      "screw_b",
+      "shroud_left",
+      "shroud_right"
+    ],
+    "duplicateLabel": "螺钉",
+    "legacySplitPartIds": ["shroud_left", "shroud_right"],
+    "expectedRenameSourceChanges": 0,
+    "expectedSplitFirstChange": {
+      "px": 52,
+      "py": 33,
+      "index": 3220,
+      "partId": "cover_left",
+      "afterPartId": "cover_left"
+    },
+    "rogue": {
+      "lowPartId": "cover_rogue",
+      "forbiddenSourcePartId": "rail_back",
+      "requiredReason": "backface_only",
+      "withheldTexture": "cover"
+    }
+  },
+  "sceneChecks": {
+    "size": 64,
+    "outerDistance": 0.4,
+    "innerDistance": 0.4,
+    "normalErrorMaxDegrees": 2,
+    "scenes": ["groove", "shell", "adjacent", "fold"]
+  },
+  "documentation": {
+    "graphicalEntry": "baker/web/index.html",
+    "cliIsAuxiliary": true,
+    "externalToolDefaultsAreNotImplementationGuarantees": true
+  }
+}

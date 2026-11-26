@@ -1,0 +1,267 @@
+{
+  "schema": "geometry-baker/bake-manifest/v1",
+  "createdAt": "2026-11-26T16:39:54.311Z",
+  "options": {
+    "size": 256,
+    "outerDistance": 0.4,
+    "innerDistance": 0.4,
+    "policy": "ownership"
+  },
+  "meshes": {
+    "low": {
+      "faces": 1152,
+      "parts": 1
+    },
+    "high": {
+      "faces": 18432,
+      "parts": 1
+    }
+  },
+  "files": [
+    {
+      "path": "debug/cage_inner.obj",
+      "bytes": 68569,
+      "sha256": "70d82b654430ac93ac89d84c97372ae0b2fdcd8f2c0a56cfb354e721bd9fdb29"
+    },
+    {
+      "path": "debug/cage_outer.obj",
+      "bytes": 67944,
+      "sha256": "4aa9b9ad77da60e7ab5a24faafb00d9bb784a284c56b4e839ec4e32714884870"
+    },
+    {
+      "path": "nearest/candidate_count.png",
+      "bytes": 907,
+      "sha256": "4c45968c00048c73d4bf8859758c3f76781774eeaa073e9c536c049da0598743"
+    },
+    {
+      "path": "nearest/debug/hits_chosen.obj",
+      "bytes": 34151,
+      "sha256": "895b0161a7ef4dbb641c4ed386b69f438bcb11eedf60a8b8c23daca868686224"
+    },
+    {
+      "path": "nearest/debug/hits_rejected.obj",
+      "bytes": 29,
+      "sha256": "d307d3781e31d05ba84f0c52aaea2f1aa22a0130517f2fecc5f1d766c76397ca"
+    },
+    {
+      "path": "nearest/debug/miss_ends.obj",
+      "bytes": 28,
+      "sha256": "2331fcca46f6039fdcf7d9d1b5f4df67cbd6859ea339e9c04f7f635f4f887960"
+    },
+    {
+      "path": "nearest/debug/rays.obj",
+      "bytes": 64548,
+      "sha256": "d49c6b6b515cd45ddb7df6ac77e3fc469422696ee5016a5565d898dd0f2122eb"
+    },
+    {
+      "path": "nearest/distance_abs.png",
+      "bytes": 26221,
+      "sha256": "e2f8bf61453acbbcf57140b2a941da6e418a4321bd499e0cd0fc255564ce398c"
+    },
+    {
+      "path": "nearest/distance_signed.png",
+      "bytes": 23710,
+      "sha256": "c56d1644c13acfca11051aca36f12e6238ed186075cb419238126afdf4ffa947"
+    },
+    {
+      "path": "nearest/hit_mask.png",
+      "bytes": 907,
+      "sha256": "4c45968c00048c73d4bf8859758c3f76781774eeaa073e9c536c049da0598743"
+    },
+    {
+      "path": "nearest/normal_error.png",
+      "bytes": 63491,
+      "sha256": "b492da1f06dca6f8fd4cb30d258564e5c43be287388332d1ee5fee9dbe419043"
+    },
+    {
+      "path": "nearest/normal_tangent.png",
+      "bytes": 104825,
+      "sha256": "37218536393bc1f0faa92d2677b9be5fbc98c0db51f2f1a078002256c1e52e1d"
+    },
+    {
+      "path": "nearest/protected_mask.png",
+      "bytes": 856,
+      "sha256": "2e66befb46423da55fc7428344d6f2b69528392510c7b48371581ff330d0c5c4"
+    },
+    {
+      "path": "nearest/ray_distance.png",
+      "bytes": 25317,
+      "sha256": "ed51ba83f78e50b86246db008689d4c0cfa88bd40e1bbb90c42585b44f0f6d6d"
+    },
+    {
+      "path": "nearest/render/front_baked.png",
+      "bytes": 16895,
+      "sha256": "a092bc3711ea1c8960fe1c4da624c7e1a99531f95066d13041145bafa06a1360"
+    },
+    {
+      "path": "nearest/render/front_low_flat.png",
+      "bytes": 4471,
+      "sha256": "6dea11ae77f99a63ba5b6f7ea4b6f7a613e04b83c7f9fee76bb0b8670cf08330"
+    },
+    {
+      "path": "nearest/render/iso_baked.png",
+      "bytes": 13994,
+      "sha256": "e5101ba9127c97e566b4e72ffb6d2197eb865f584f833b0956fb9252723389c4"
+    },
+    {
+      "path": "nearest/render/iso_low_flat.png",
+      "bytes": 5136,
+      "sha256": "449dc73ef24ff0307914122dc81ae43c93c88a6f5cea039376a83554890e73c5"
+    },
+    {
+      "path": "nearest/render/side_baked.png",
+      "bytes": 2324,
+      "sha256": "6dd7b30ca2443a17023ac30706b5195268943ff4d82c948cfb72ef800e8bbdd5"
+    },
+    {
+      "path": "nearest/render/side_low_flat.png",
+      "bytes": 2324,
+      "sha256": "6dd7b30ca2443a17023ac30706b5195268943ff4d82c948cfb72ef800e8bbdd5"
+    },
+    {
+      "path": "nearest/render/top_baked.png",
+      "bytes": 3870,
+      "sha256": "42c937f0bddd5a52ac476b0f6faa80f7efef3ee82df24794241c8526275e47a5"
+    },
+    {
+      "path": "nearest/render/top_low_flat.png",
+      "bytes": 2437,
+      "sha256": "e2767d861a6d66fb9784a397e34df75463094b7208fe160b70d1b5dff81bf866"
+    },
+    {
+      "path": "nearest/report.json",
+      "bytes": 1085,
+      "sha256": "c559a73f1a861a10a3a40a22076e034c18c429e92e805a4d1444ac52e0586295"
+    },
+    {
+      "path": "nearest/status.png",
+      "bytes": 866,
+      "sha256": "5c05a3b1a5f8c548d52d9538f190dc40da286455d8b8ede4c499a9025c1c99c7"
+    },
+    {
+      "path": "nearest/unknown_mask.png",
+      "bytes": 856,
+      "sha256": "2e66befb46423da55fc7428344d6f2b69528392510c7b48371581ff330d0c5c4"
+    },
+    {
+      "path": "ownership/candidate_count.png",
+      "bytes": 907,
+      "sha256": "4c45968c00048c73d4bf8859758c3f76781774eeaa073e9c536c049da0598743"
+    },
+    {
+      "path": "ownership/debug/hits_chosen.obj",
+      "bytes": 34151,
+      "sha256": "895b0161a7ef4dbb641c4ed386b69f438bcb11eedf60a8b8c23daca868686224"
+    },
+    {
+      "path": "ownership/debug/hits_rejected.obj",
+      "bytes": 29,
+      "sha256": "d307d3781e31d05ba84f0c52aaea2f1aa22a0130517f2fecc5f1d766c76397ca"
+    },
+    {
+      "path": "ownership/debug/miss_ends.obj",
+      "bytes": 28,
+      "sha256": "2331fcca46f6039fdcf7d9d1b5f4df67cbd6859ea339e9c04f7f635f4f887960"
+    },
+    {
+      "path": "ownership/debug/rays.obj",
+      "bytes": 64548,
+      "sha256": "d49c6b6b515cd45ddb7df6ac77e3fc469422696ee5016a5565d898dd0f2122eb"
+    },
+    {
+      "path": "ownership/distance_abs.png",
+      "bytes": 26221,
+      "sha256": "e2f8bf61453acbbcf57140b2a941da6e418a4321bd499e0cd0fc255564ce398c"
+    },
+    {
+      "path": "ownership/distance_signed.png",
+      "bytes": 23710,
+      "sha256": "c56d1644c13acfca11051aca36f12e6238ed186075cb419238126afdf4ffa947"
+    },
+    {
+      "path": "ownership/hit_mask.png",
+      "bytes": 907,
+      "sha256": "4c45968c00048c73d4bf8859758c3f76781774eeaa073e9c536c049da0598743"
+    },
+    {
+      "path": "ownership/normal_error.png",
+      "bytes": 63491,
+      "sha256": "b492da1f06dca6f8fd4cb30d258564e5c43be287388332d1ee5fee9dbe419043"
+    },
+    {
+      "path": "ownership/normal_tangent.png",
+      "bytes": 104825,
+      "sha256": "37218536393bc1f0faa92d2677b9be5fbc98c0db51f2f1a078002256c1e52e1d"
+    },
+    {
+      "path": "ownership/protected_mask.png",
+      "bytes": 856,
+      "sha256": "2e66befb46423da55fc7428344d6f2b69528392510c7b48371581ff330d0c5c4"
+    },
+    {
+      "path": "ownership/ray_distance.png",
+      "bytes": 25317,
+      "sha256": "ed51ba83f78e50b86246db008689d4c0cfa88bd40e1bbb90c42585b44f0f6d6d"
+    },
+    {
+      "path": "ownership/render/front_baked.png",
+      "bytes": 16895,
+      "sha256": "a092bc3711ea1c8960fe1c4da624c7e1a99531f95066d13041145bafa06a1360"
+    },
+    {
+      "path": "ownership/render/front_low_flat.png",
+      "bytes": 4471,
+      "sha256": "6dea11ae77f99a63ba5b6f7ea4b6f7a613e04b83c7f9fee76bb0b8670cf08330"
+    },
+    {
+      "path": "ownership/render/iso_baked.png",
+      "bytes": 13994,
+      "sha256": "e5101ba9127c97e566b4e72ffb6d2197eb865f584f833b0956fb9252723389c4"
+    },
+    {
+      "path": "ownership/render/iso_low_flat.png",
+      "bytes": 5136,
+      "sha256": "449dc73ef24ff0307914122dc81ae43c93c88a6f5cea039376a83554890e73c5"
+    },
+    {
+      "path": "ownership/render/side_baked.png",
+      "bytes": 2324,
+      "sha256": "6dd7b30ca2443a17023ac30706b5195268943ff4d82c948cfb72ef800e8bbdd5"
+    },
+    {
+      "path": "ownership/render/side_low_flat.png",
+      "bytes": 2324,
+      "sha256": "6dd7b30ca2443a17023ac30706b5195268943ff4d82c948cfb72ef800e8bbdd5"
+    },
+    {
+      "path": "ownership/render/top_baked.png",
+      "bytes": 3870,
+      "sha256": "42c937f0bddd5a52ac476b0f6faa80f7efef3ee82df24794241c8526275e47a5"
+    },
+    {
+      "path": "ownership/render/top_low_flat.png",
+      "bytes": 2437,
+      "sha256": "e2767d861a6d66fb9784a397e34df75463094b7208fe160b70d1b5dff81bf866"
+    },
+    {
+      "path": "ownership/report.json",
+      "bytes": 1087,
+      "sha256": "808ead9066fc1588c62e8777fab3bb9ab28706120fad74e79a2a374c0e237a66"
+    },
+    {
+      "path": "ownership/status.png",
+      "bytes": 866,
+      "sha256": "5c05a3b1a5f8c548d52d9538f190dc40da286455d8b8ede4c499a9025c1c99c7"
+    },
+    {
+      "path": "ownership/unknown_mask.png",
+      "bytes": 856,
+      "sha256": "2e66befb46423da55fc7428344d6f2b69528392510c7b48371581ff330d0c5c4"
+    },
+    {
+      "path": "policy_comparison.json",
+      "bytes": 674,
+      "sha256": "c21efbd4b5d1a99a14d5c6421414d94595b134266595af3e68b580db5dc52a39"
+    }
+  ]
+}

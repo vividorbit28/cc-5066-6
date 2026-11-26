@@ -14,7 +14,10 @@ function run(scriptRel, label) {
 }
 
 run('make_models.js', 'generating test models');
+run('make_maintenance_sample.js', 'packaging re-bakable maintenance parts');
 run('validate.js', 'geometry & policy assertions');
+run('validate-maintenance.js', 'projection-rule maintenance checks');
+run('validate-bake-assets.js', 'clean-directory bake asset validation');
 run('gui-dom-test.js', 'graphical UI workflow (jsdom)');
 
 // Full-resolution deliverable bake for every scene.

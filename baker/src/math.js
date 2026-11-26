@@ -103,26 +103,28 @@ function tangentFrame(p0, p1, p2, uv0, uv1, uv2) {
   const r = 1 / det;
   T = V.norm(V.scale(
     V.sub(V.scale(e1, d2[1]), V.scale(e2, d1[1])), r));
-  B = V.norm(V.scale(
-    V.sub(V.scale(e2, d1[0]), V.scale(e1, d2[0])), r));
+  const rawB = V.scale(
+    V.sub(V.scale(e2, d1[0]), V.scale(e1, d2[0])), r);
   let N = V.norm(V.cross(e1, e2));
-  // Re-orthogonalize (Gram-Schmidt) and make B a right-handed partner.
+  // Re-orthogonalize T against N and derive B as N x T. This makes the
+  // baking/rendering contract right-handed: T x B = N. For mirrored UVs the
+  // V-gradient can have the opposite sign; callers that need direct V-flow
+  // should read bitangentSign rather than flipping B away from this basis.
   T = V.norm(V.sub(T, V.scale(N, V.dot(T, N))));
   B = V.cross(N, T);
-  if (V.dot(B, V.scale(
-    V.sub(V.scale(e2, d1[0]), V.scale(e1, d2[0])), r)) < 0) {
-    B = V.neg(B);
-  }
-  return { T, B, N, degenerateUV: false };
+  const bitangentSign = V.dot(B, V.norm(rawB)) < 0 ? -1 : 1;
+  return { T, B, N, bitangentSign, degenerateUV: false };
 }
 
-// World->tangent matrix for a frame. Stored column-major.
+// World->tangent matrix for an orthonormal right-handed frame (T, B, N).
+// The mathematical matrix has rows T, B, N; the returned array uses the
+// module's column-major convention, so M.mulVec(worldToTangent(...), v)
+// produces [dot(T,v), dot(B,v), dot(N,v)].
 function worldToTangent(T, B, N) {
-  // Rows are T, B, N (world basis expressed in world coords).
   return [
-    T[0], T[1], T[2],
-    B[0], B[1], B[2],
-    N[0], N[1], N[2],
+    T[0], B[0], N[0],
+    T[1], B[1], N[1],
+    T[2], B[2], N[2],
   ];
 }
 

@@ -2,18 +2,50 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { bake, STATUS_NAME } = require('../src/baker');
 const { writeOBJ } = require('../src/mesh');
 const { V } = require('../src/math');
 const {
-  encodePNG, grayscaleToRGBA, statusToRGBA, maskToRGBA,
+  encodePNG, grayscaleToRGBA, statusToRGBA, maskToRGBA, errorToRGBA,
 } = require('../src/image');
 const { Renderer } = require('../src/render');
+
+function hashBuffer(buf) {
+  return crypto.createHash('sha256').update(buf).digest('hex');
+}
+
+function removePreviousOutputs(outDir) {
+  if (!fs.existsSync(outDir)) return;
+  const manifestPath = path.join(outDir, 'bake-manifest.json');
+  if (fs.existsSync(manifestPath)) {
+    try {
+      const old = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      for (const file of old.files ?? []) {
+        fs.rmSync(path.join(outDir, file.path ?? file), { force: true });
+      }
+    } catch {
+      // A corrupt manifest must not block rebaking; the next manifest replaces it.
+    }
+  }
+  for (const sub of ['nearest', 'ownership', 'debug']) {
+    fs.rmSync(path.join(outDir, sub), { recursive: true, force: true });
+  }
+  for (const file of ['policy_comparison.json', 'bake-manifest.json']) {
+    fs.rmSync(path.join(outDir, file), { force: true });
+  }
+}
+
+function prepareOutputDir(outDir, cleanOutput = false) {
+  if (cleanOutput) fs.rmSync(outDir, { recursive: true, force: true });
+  fs.mkdirSync(outDir, { recursive: true });
+  if (!cleanOutput) removePreviousOutputs(outDir);
+}
 
 // Run both hit-selection policies, export every texture/diagnostic layer,
 // render the low mesh with the baked normals, and serialize hit geometry.
 function runBake(low, high, opts, outDir) {
-  fs.mkdirSync(outDir, { recursive: true });
+  prepareOutputDir(outDir, opts.cleanOutput === true);
   const results = {};
   for (const policy of ['nearest', 'ownership']) {
     const t0 = Date.now();
@@ -27,6 +59,7 @@ function runBake(low, high, opts, outDir) {
   }
   exportComparison(results, outDir);
   exportCage(low, results.ownership, outDir);
+  writeBakeManifest(outDir, { low, high, opts, results });
   return results;
 }
 
@@ -54,6 +87,11 @@ function exportTextures(result, dir) {
   fs.writeFileSync(path.join(dir, 'candidate_count.png'),
     encodePNG(size, size, Buffer.from(grayscaleToRGBA(
       Float32Array.from(layers.candidateCount), size, { min: 0 }))));
+  fs.writeFileSync(path.join(dir, 'unknown_mask.png'),
+    encodePNG(size, size, Buffer.from(maskToRGBA(layers.unknownMask, size,
+      [64, 220, 220], [20, 20, 28]))));
+  fs.writeFileSync(path.join(dir, 'normal_error.png'),
+    encodePNG(size, size, Buffer.from(errorToRGBA(layers.normalError, size, 2))));
 }
 
 // OBJ lines for a sampled subset of rays plus point markers for chosen hits
@@ -135,16 +173,21 @@ function exportRenderViews(low, result, dir) {
 
 function exportJSONReport(low, high, result, file) {
   const total = result.size * result.size;
-  const covered = total - result.counts.outside_uv;
+  const covered = total - result.counts.outside_uv - result.counts.degenerate;
   const report = {
+    schema: 'geometry-baker/bake-report/v1',
     size: result.size,
     policy: result.policy,
     outerDistance: result.outerDistance,
     innerDistance: result.innerDistance,
+    rayDirection: 'inner_to_outer_normalized(cageOuter-cageInner)',
+    tangentConvention: 'T/B/N right-handed; OpenGL-style +Z normal map',
     triangles: { low: low.faces.length, high: high.faces.length },
     parts: low.partNames,
+    partIds: low.partIds.length ? low.partIds : low.partNames,
     counts: result.counts,
     protectedTexels: result.layers.protectedMask.reduce((n, v) => n + (v ? 1 : 0), 0),
+    unknownCorrespondenceTexels: result.counts.unknown_correspondence,
     coveredTexels: covered,
     hitRate: covered ? result.counts.hit / covered : 0,
     // Correct correspondence is reported separately from raw success:
@@ -152,6 +195,13 @@ function exportJSONReport(low, high, result, file) {
     cleanRate: covered ? result.counts.hit / covered : 0,
     conflictRate: covered ? result.counts.conflict / covered : 0,
     missRate: covered ? result.counts.miss / covered : 0,
+    unknownRate: covered ? result.counts.unknown_correspondence / covered : 0,
+    normalErrorDegrees: result.normalError,
+    projectionIdentity: {
+      checked: result.projectionIdentity.checked,
+      mismatchCount: result.projectionIdentity.mismatchCount,
+      firstMismatch: result.projectionIdentity.firstMismatch,
+    },
     elapsedMs: result.elapsedMs,
     reasonSamples: sampleReasons(result),
   };
@@ -204,4 +254,64 @@ function summarize(r) {
   };
 }
 
-module.exports = { runBake };
+function listFilesRecursive(dir, prefix = '') {
+  const out = [];
+  if (!fs.existsSync(dir)) return out;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const rel = prefix ? path.join(prefix, entry.name) : entry.name;
+    const abs = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...listFilesRecursive(abs, rel));
+    else if (entry.name !== 'bake-manifest.json') out.push(rel.split(path.sep).join('/'));
+  }
+  return out.sort();
+}
+
+function writeBakeManifest(outDir, context) {
+  const files = listFilesRecursive(outDir).map((rel) => {
+    const abs = path.join(outDir, rel);
+    const buf = fs.readFileSync(abs);
+    return { path: rel, bytes: buf.length, sha256: hashBuffer(buf) };
+  });
+  const manifest = {
+    schema: 'geometry-baker/bake-manifest/v1',
+    createdAt: new Date().toISOString(),
+    options: {
+      size: context.opts.size ?? 256,
+      outerDistance: context.opts.outerDistance ?? 0.5,
+      innerDistance: context.opts.innerDistance ?? 0.5,
+      policy: context.opts.policy ?? 'ownership',
+    },
+    meshes: {
+      low: { faces: context.low.faces.length, parts: context.low.partNames.length },
+      high: { faces: context.high.faces.length, parts: context.high.partNames.length },
+    },
+    files,
+  };
+  fs.writeFileSync(path.join(outDir, 'bake-manifest.json'), JSON.stringify(manifest, null, 2));
+  return manifest;
+}
+
+function verifyBakeManifest(outDir) {
+  const manifestPath = path.join(outDir, 'bake-manifest.json');
+  if (!fs.existsSync(manifestPath)) return { valid: false, errors: ['bake-manifest.json is missing'] };
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const errors = [];
+  for (const file of manifest.files ?? []) {
+    const abs = path.join(outDir, file.path);
+    if (!fs.existsSync(abs)) {
+      errors.push(`missing ${file.path}`);
+      continue;
+    }
+    const buf = fs.readFileSync(abs);
+    if (buf.length !== file.bytes) errors.push(`size mismatch ${file.path}`);
+    if (hashBuffer(buf) !== file.sha256) errors.push(`sha256 mismatch ${file.path}`);
+  }
+  const expected = new Set((manifest.files ?? []).map((f) => f.path));
+  for (const actual of listFilesRecursive(outDir)) {
+    if (!expected.has(actual)) errors.push(`untracked_or_stale_file ${actual}`);
+  }
+  const valid = errors.length === 0;
+  return { valid, ok: valid, errors, manifest };
+}
+
+module.exports = { runBake, verifyBakeManifest, prepareOutputDir };

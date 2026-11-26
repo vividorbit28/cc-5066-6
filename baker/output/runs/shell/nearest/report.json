@@ -1,32 +1,64 @@
 {
+  "schema": "geometry-baker/bake-report/v1",
   "size": 256,
   "policy": "nearest",
   "outerDistance": 0.4,
   "innerDistance": 0.4,
+  "rayDirection": "inner_to_outer_normalized(cageOuter-cageInner)",
+  "tangentConvention": "T/B/N right-handed; OpenGL-style +Z normal map",
   "triangles": {
     "low": 1920,
     "high": 1920
   },
   "parts": [
-    "default",
+    "shell_outer",
+    "shell_inner"
+  ],
+  "partIds": [
     "shell_outer",
     "shell_inner"
   ],
   "counts": {
-    "hit": 52900,
+    "hit": 57,
     "miss": 0,
-    "conflict": 0,
+    "conflict": 52843,
     "outside_uv": 12636,
-    "degenerate": 0
+    "degenerate": 0,
+    "unknown_correspondence": 0,
+    "normal_error_warn": 0,
+    "identity_mismatch": 52843
   },
   "protectedTexels": 0,
+  "unknownCorrespondenceTexels": 0,
   "coveredTexels": 52900,
-  "hitRate": 1,
-  "cleanRate": 1,
-  "conflictRate": 0,
+  "hitRate": 0.0010775047258979205,
+  "cleanRate": 0.0010775047258979205,
+  "conflictRate": 0.998922495274102,
   "missRate": 0,
-  "elapsedMs": 543,
+  "unknownRate": 0,
+  "normalErrorDegrees": {
+    "count": 52900,
+    "mean": 0.31280359326153184,
+    "max": 0.34795795967774545,
+    "p95": 0.3177554420709799
+  },
+  "projectionIdentity": {
+    "checked": 52900,
+    "mismatchCount": 52843,
+    "firstMismatch": {
+      "px": 13,
+      "py": 13,
+      "lowPart": 0,
+      "lowPartId": "shell_outer",
+      "hitPart": 1,
+      "hitPartId": "shell_inner",
+      "face": 961,
+      "reason": "backface_nearest"
+    }
+  },
+  "elapsedMs": 217,
   "reasonSamples": {
-    "ok": 52900
+    "backface_nearest": 52843,
+    "ok": 57
   }
 }

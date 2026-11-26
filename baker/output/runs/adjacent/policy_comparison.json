@@ -5,7 +5,10 @@
       "miss": 0,
       "conflict": 0,
       "outside_uv": 16316,
-      "degenerate": 0
+      "degenerate": 0,
+      "unknown_correspondence": 0,
+      "normal_error_warn": 0,
+      "identity_mismatch": 0
     },
     "reasons": {
       "ok": 49220
@@ -17,7 +20,10 @@
       "miss": 0,
       "conflict": 0,
       "outside_uv": 16316,
-      "degenerate": 0
+      "degenerate": 0,
+      "unknown_correspondence": 0,
+      "normal_error_warn": 0,
+      "identity_mismatch": 0
     },
     "reasons": {
       "ok": 49220

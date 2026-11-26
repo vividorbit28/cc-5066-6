@@ -123,8 +123,8 @@ function shellScene() {
       for (let i = 0; i < seg; i++) {
         const a = idx(i, j), c = idx(i + 1, j), d = idx(i + 1, j + 1), e = idx(i, j + 1);
         // Winding so outer normals point radially away from the cylinder axis.
-        b.mesh.faces.push([a, d, c], [a, e, d]);
-        b.mesh.uvFaces.push([a, d, c], [a, e, d]);
+        b.mesh.faces.push([a, c, d], [a, d, e]);
+        b.mesh.uvFaces.push([a, c, d], [a, d, e]);
         b.mesh.facePart.push(0, 0);
       }
     }
@@ -147,7 +147,7 @@ function shellScene() {
     for (let j = 0; j < rows; j++) {
       for (let i = 0; i < seg; i++) {
         const a = iidx(i, j), c = iidx(i + 1, j), d = iidx(i + 1, j + 1), e = iidx(i, j + 1);
-        // Winding flipped so normals point inward.
+        // Inner wall normal faces the cavity/axis, opposite the outward ray.
         b.mesh.faces.push([a, d, c], [a, e, d]);
         b.mesh.uvFaces.push([a, d, c], [a, e, d]);
         b.mesh.facePart.push(1, 1);

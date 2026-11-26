@@ -1,14 +1,18 @@
 {
   "nearest": {
     "counts": {
-      "hit": 52900,
+      "hit": 57,
       "miss": 0,
-      "conflict": 0,
+      "conflict": 52843,
       "outside_uv": 12636,
-      "degenerate": 0
+      "degenerate": 0,
+      "unknown_correspondence": 0,
+      "normal_error_warn": 0,
+      "identity_mismatch": 52843
     },
     "reasons": {
-      "ok": 52900
+      "backface_nearest": 52843,
+      "ok": 57
     }
   },
   "ownership": {
@@ -17,13 +21,17 @@
       "miss": 0,
       "conflict": 0,
       "outside_uv": 12636,
-      "degenerate": 0
+      "degenerate": 0,
+      "unknown_correspondence": 0,
+      "normal_error_warn": 0,
+      "identity_mismatch": 0
     },
     "reasons": {
-      "part_override": 52900
+      "backface_rejected": 52843,
+      "ok": 57
     }
   },
-  "texelChoiceDifferences": 0,
-  "backfacePenetrationsFixed": 0,
-  "partOwnershipProtections": 52900
+  "texelChoiceDifferences": 52843,
+  "backfacePenetrationsFixed": 52843,
+  "partOwnershipProtections": 0
 }

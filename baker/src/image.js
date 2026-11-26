@@ -97,6 +97,7 @@ function statusToRGBA(status, size) {
     [255, 180, 0],    // conflict amber
     [30, 30, 40],     // outside UV dark
     [180, 0, 220],    // degenerate purple
+    [64, 220, 220],   // unknown correspondence cyan
   ];
   const out = new Uint8ClampedArray(size * size * 4);
   for (let i = 0; i < size * size; i++) {
@@ -117,5 +118,17 @@ function maskToRGBA(mask, size, on = [255, 255, 255], off = [0, 0, 0]) {
   return out;
 }
 
-return { encodePNG, grayscaleToRGBA, statusToRGBA, maskToRGBA };
+function errorToRGBA(values, size, maxDeg = 2) {
+  const out = new Uint8ClampedArray(size * size * 4);
+  for (let i = 0; i < size * size; i++) {
+    const t = Math.max(0, Math.min(1, (values[i] || 0) / maxDeg));
+    out[i * 4] = Math.round(40 + 215 * t);
+    out[i * 4 + 1] = Math.round(200 * (1 - t));
+    out[i * 4 + 2] = Math.round(120 * (1 - t));
+    out[i * 4 + 3] = values[i] > 0 ? 255 : 40;
+  }
+  return out;
+}
+
+return { encodePNG, grayscaleToRGBA, statusToRGBA, maskToRGBA, errorToRGBA };
 });

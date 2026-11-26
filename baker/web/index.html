@@ -34,6 +34,8 @@
         <option value="shell">薄壳（内外两层）</option>
         <option value="adjacent">相邻分离零件</option>
         <option value="fold">折回薄件（nearest 穿透对照）</option>
+        <option value="maintenance">维护部件集（同名螺钉/拆分罩壳）</option>
+        <option value="rogue">维护失效件（仅中隔壁背面）</option>
       </select>
     </div>
 
@@ -61,7 +63,16 @@
     </div>
 
     <button id="bakeBtn" type="button" disabled>烘焙</button>
-    <div id="status" class="status">请先选择高低模</div>
+    <div class="run-row">
+      <span id="runDot" class="run-dot idle" aria-hidden="true"></span>
+      <span id="runState" class="run-state">空闲</span>
+    </div>
+    <div id="status" class="status" data-running="false">请先选择高低模</div>
+
+    <section id="anomalyPanel" class="anomaly-panel hidden" aria-live="polite">
+      <h3>贴图细节与投射偏差异常</h3>
+      <ul id="anomalyList"></ul>
+    </section>
 
     <h2>3. 配置</h2>
     <div class="file-row">
@@ -81,6 +92,8 @@
       <div><span id="mProtected">–</span><label>归属保护</label></div>
       <div><span id="mClean">–</span><label>正确率</label></div>
       <div><span id="mAny">–</span><label>命中率</label></div>
+      <div><span id="mNormalError">–</span><label>最大法线误差</label></div>
+      <div><span id="mIdentity">–</span><label>身份不一致</label></div>
     </div>
 
     <div class="tabs">
@@ -88,6 +101,8 @@
       <button class="tab" data-layer="distance">距离</button>
       <button class="tab" data-layer="signed">带符号距离</button>
       <button class="tab" data-layer="status">诊断状态</button>
+      <button class="tab" data-layer="error">法线误差/投射偏差</button>
+      <button class="tab" data-layer="unknown">未知对应区域</button>
       <button class="tab" data-layer="protected">归属保护层</button>
       <button class="tab" data-layer="render">低模渲染</button>
       <button class="tab" data-layer="debug">投射/笼体</button>
@@ -127,6 +142,8 @@
 <script src="../src/baker.js"></script>
 <script src="../src/image.js"></script>
 <script src="../src/render.js"></script>
+<script src="../src/samples.js"></script>
+<script src="../src/maintenance.js"></script>
 <script src="demo-data.js"></script>
 <script src="app.js"></script>
 </body>

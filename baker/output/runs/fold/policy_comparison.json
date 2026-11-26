@@ -5,7 +5,10 @@
       "miss": 0,
       "conflict": 52900,
       "outside_uv": 12636,
-      "degenerate": 0
+      "degenerate": 0,
+      "unknown_correspondence": 0,
+      "normal_error_warn": 0,
+      "identity_mismatch": 52900
     },
     "reasons": {
       "cross_part_nearest": 52900
@@ -17,7 +20,10 @@
       "miss": 0,
       "conflict": 0,
       "outside_uv": 12636,
-      "degenerate": 0
+      "degenerate": 0,
+      "unknown_correspondence": 0,
+      "normal_error_warn": 0,
+      "identity_mismatch": 0
     },
     "reasons": {
       "part_override": 52900

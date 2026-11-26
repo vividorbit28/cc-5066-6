@@ -1,14 +1,20 @@
 {
+  "schema": "geometry-baker/bake-report/v1",
   "size": 256,
   "policy": "ownership",
   "outerDistance": 0.4,
   "innerDistance": 0.4,
+  "rayDirection": "inner_to_outer_normalized(cageOuter-cageInner)",
+  "tangentConvention": "T/B/N right-handed; OpenGL-style +Z normal map",
   "triangles": {
     "low": 1920,
     "high": 1920
   },
   "parts": [
-    "default",
+    "shell_outer",
+    "shell_inner"
+  ],
+  "partIds": [
     "shell_outer",
     "shell_inner"
   ],
@@ -17,16 +23,33 @@
     "miss": 0,
     "conflict": 0,
     "outside_uv": 12636,
-    "degenerate": 0
+    "degenerate": 0,
+    "unknown_correspondence": 0,
+    "normal_error_warn": 0,
+    "identity_mismatch": 0
   },
-  "protectedTexels": 52900,
+  "protectedTexels": 52843,
+  "unknownCorrespondenceTexels": 0,
   "coveredTexels": 52900,
   "hitRate": 1,
   "cleanRate": 1,
   "conflictRate": 0,
   "missRate": 0,
-  "elapsedMs": 185,
+  "unknownRate": 0,
+  "normalErrorDegrees": {
+    "count": 52900,
+    "mean": 0.2598582726720361,
+    "max": 0.3694847944415684,
+    "p95": 0.32124228889484335
+  },
+  "projectionIdentity": {
+    "checked": 52900,
+    "mismatchCount": 0,
+    "firstMismatch": null
+  },
+  "elapsedMs": 147,
   "reasonSamples": {
-    "part_override": 52900
+    "backface_rejected": 52843,
+    "ok": 57
   }
 }

@@ -4,12 +4,24 @@
 // the CLI (window.GeoBaker* modules); there is no canned texture data.
 const { parseOBJ } = window.GeoBakerMesh;
 const { bake } = window.GeoBakerBaker;
-const { grayscaleToRGBA, statusToRGBA, maskToRGBA } = window.GeoBakerImage;
+const { grayscaleToRGBA, statusToRGBA, maskToRGBA, errorToRGBA } = window.GeoBakerImage;
 const { Renderer } = window.GeoBakerRender;
 const { V } = window.GeoBakerMath;
+const textureReports = window.GeoBakerMaintenance?.textureReports ?? null;
 
 const el = (id) => document.getElementById(id);
-const state = { low: null, high: null, result: null, lowName: '', highName: '', layer: 'normal' };
+const state = {
+  low: null, high: null, result: null, lowName: '', highName: '',
+  layer: 'normal', partRules: null,
+};
+
+function setRunState(mode, text) {
+  const dot = el('runDot');
+  if (dot) dot.className = `run-dot ${mode}`;
+  if (el('runState')) el('runState').textContent = text;
+  if (el('status')) el('status').dataset.running = mode === 'work' ? 'true' : 'false';
+  if (el('bakeBtn')) el('bakeBtn').dataset.running = mode === 'work' ? 'true' : 'false';
+}
 
 el('outer').addEventListener('input', (e) => { el('outerVal').textContent = Number(e.target.value).toFixed(2); });
 el('inner').addEventListener('input', (e) => { el('innerVal').textContent = Number(e.target.value).toFixed(2); });
@@ -35,6 +47,7 @@ async function handleMesh(input, which) {
   try {
     const text = await readFileText(file);
     const mesh = parseOBJ(text, file.name);
+    state.partRules = null;
     if (which === 'low') {
       if (!mesh.uvFaces.length) throw new Error('低模缺少 UV，无法烘焙');
       state.low = mesh; state.lowName = file.name;
@@ -55,13 +68,15 @@ el('highFile').addEventListener('change', (e) => handleMesh(e.target, 'high'));
 el('loadDemo').addEventListener('click', () => {
   const scene = el('demoScene').value;
   const data = window.GeoBakerDemo[scene]();
-  state.low = parseOBJ(data.low, scene + '_low');
-  state.high = parseOBJ(data.high, scene + '_high');
+  state.low = typeof data.low === 'string' ? parseOBJ(data.low, scene + '_low') : data.low;
+  state.high = typeof data.high === 'string' ? parseOBJ(data.high, scene + '_high') : data.high;
+  state.partRules = data.partRules ?? null;
   state.lowName = scene + '_low.obj';
   state.highName = scene + '_high.obj';
   el('lowInfo').textContent = `内置 · ${state.low.faces.length} 三角面 · ${state.low.partNames.length} 部件`;
   el('highInfo').textContent = `内置 · ${state.high.faces.length} 三角面 · ${state.high.partNames.length} 部件`;
   el('bakeBtn').disabled = false;
+  setRunState('idle', '模型已载入，待烘焙');
   setStatus('内置场景已载入，点击烘焙', 'ok');
 });
 
@@ -77,7 +92,10 @@ function currentConfig() {
 }
 
 el('bakeBtn').addEventListener('click', () => {
-  if (!state.low || !state.high) return;
+  if (!state.low || !state.high || el('bakeBtn').dataset.running === 'true') return;
+  el('bakeBtn').disabled = true;
+  el('bakeBtn').textContent = '烘焙中…';
+  setRunState('work', '烘焙中：构建 BVH、逐纹素投射并核对身份/法线…');
   setStatus('烘焙中：构建 BVH、逐纹素投射…', 'work');
   // Defer so the status paints before the synchronous bake blocks the UI.
   setTimeout(() => {
@@ -89,15 +107,23 @@ el('bakeBtn').addEventListener('click', () => {
         outerDistance: cfg.outerDistance,
         innerDistance: cfg.innerDistance,
         policy: cfg.policy,
+        partRules: state.partRules ?? undefined,
       });
       state.result.elapsedMs = performance.now() - t0;
       state.config = cfg;
       showMetrics();
+      const anomalies = showAnomalies();
       selectLayer(state.layer);
       el('saveConfig').disabled = false;
-      setStatus(`烘焙完成（${state.result.elapsedMs.toFixed(0)} ms），可切换诊断层查看投射偏差`, 'ok');
+      const severe = anomalies.some((a) => a.severe);
+      setRunState(severe ? 'err' : 'ok', severe ? '完成，但存在需处置的异常' : '烘焙完成且来源有效');
+      setStatus(`烘焙完成（${state.result.elapsedMs.toFixed(0)} ms）；${anomalies.length ? `${anomalies.length} 项异常已标出` : '投影身份与法线误差正常'}，可切换诊断层`, severe ? 'err' : 'ok');
     } catch (e) {
+      setRunState('err', '烘焙失败');
       setStatus('烘焙失败：' + e.message, 'err');
+    } finally {
+      el('bakeBtn').disabled = false;
+      el('bakeBtn').textContent = '烘焙';
     }
   }, 30);
 });
@@ -113,6 +139,63 @@ function showMetrics() {
   el('mProtected').textContent = protectedCount;
   el('mClean').textContent = (100 * r.counts.hit / covered).toFixed(1) + '%';
   el('mAny').textContent = (100 * (r.counts.hit + r.counts.conflict) / covered).toFixed(1) + '%';
+  el('mNormalError').textContent = `${r.normalError.max.toFixed(2)}°`;
+  el('mIdentity').textContent = String(r.projectionIdentity.mismatchCount);
+}
+
+function showAnomalies() {
+  const r = state.result;
+  const items = [];
+  const add = (category, severe, text) => items.push({ category, severe, text });
+
+  if (r.counts.miss) {
+    add('detail', true, `${r.counts.miss} 个纹素未取得合法高模来源，贴图细节存在空洞/扣留区域。`);
+    add('deviation', true, '未命中射线已保留为 miss；不能用隔壁部件背面或扩大笼距伪造成果。');
+  }
+  if (r.counts.conflict) {
+    add('detail', true, `${r.counts.conflict} 个冲突纹素会导致贴图细节来源不确定。`);
+    add('deviation', true, `${r.counts.conflict} 个投影身份冲突/跨部件或背面最近候选。`);
+  }
+  if (r.counts.unknown_correspondence) {
+    add('detail', true, `${r.counts.unknown_correspondence} 个未知对应区域已在贴图上标青并应扣留。`);
+    add('deviation', true, '未知新旧部件对应关系；只标识，不猜测投射来源。');
+  }
+  if (r.projectionIdentity.mismatchCount) {
+    add('deviation', true, `${r.projectionIdentity.mismatchCount} 个已发布候选未通过投影身份核对。`);
+  }
+  if (r.normalError.max > 2) {
+    add('detail', false, `法线编码/解码最大误差 ${r.normalError.max.toFixed(2)}°，超过 2° 展示阈值。`);
+    add('deviation', false, `法线变换偏差：mean ${r.normalError.mean.toFixed(3)}° / p95 ${r.normalError.p95.toFixed(3)}°。`);
+  }
+  if (textureReports && state.partRules) {
+    for (const t of textureReports(r, { normalErrorMaxDeg: 2 })) {
+      if (!t.publishable) {
+        add('detail', true, `贴图 ${t.id} 不可发布：${t.problems.join('、')}。`);
+      }
+    }
+  }
+
+  const panel = el('anomalyPanel');
+  const list = el('anomalyList');
+  panel.classList.remove('hidden', 'err', 'ok');
+  list.innerHTML = '';
+  if (!items.length) {
+    panel.classList.add('ok');
+    const li = document.createElement('li');
+    li.className = 'deviation';
+    li.innerHTML = '<span class="anomaly-tag">正常</span>贴图细节完整，投影身份与法线误差在阈值内。';
+    list.appendChild(li);
+    return items;
+  }
+  panel.classList.add(items.some((i) => i.severe) ? 'err' : '');
+  for (const item of items) {
+    const li = document.createElement('li');
+    li.className = item.category;
+    const tag = item.category === 'detail' ? '贴图细节' : '投射偏差';
+    li.innerHTML = `<span class="anomaly-tag">${tag}</span>${item.text}`;
+    list.appendChild(li);
+  }
+  return items;
 }
 
 function putRGBA(canvas, rgba, size) {
@@ -126,7 +209,7 @@ function putRGBA(canvas, rgba, size) {
 const LEGENDS = {
   status: [
     ['#28c878', '干净命中'], ['#e63c3c', '未命中'], ['#ffb400', '多候选冲突/跨部件'],
-    ['#1e1e28', 'UV 外'], ['#b400dc', '退化 UV'],
+    ['#1e1e28', 'UV 外'], ['#b400dc', '退化 UV'], ['#40dcdc', '未知对应区域'],
   ],
   protected: [['#5aa0ff', '归属保护：拒绝了跨部件/背面候选'], ['#14141c', '无保护事件']],
 };
@@ -170,7 +253,14 @@ function selectLayer(layer) {
     el('layerCaption').textContent = '带符号距离：暖色=高模表面在低模外侧，冷色=内凹（如凹槽）。';
   } else if (layer === 'status') {
     putRGBA(tex, statusToRGBA(L.status, r.size), r.size);
-    el('layerCaption').textContent = '逐纹素诊断：未命中与多候选冲突被保留，不静默丢弃。';
+    el('layerCaption').textContent = '逐纹素诊断：未命中、冲突与未知对应区域被保留，不静默丢弃。';
+  } else if (layer === 'error') {
+    putRGBA(tex, errorToRGBA(L.normalError, r.size, 2), r.size);
+    el('layerCaption').textContent = `投射法线误差热图（0–2°）：max ${r.normalError.max.toFixed(3)}°，mean ${r.normalError.mean.toFixed(3)}°；用于核对切线矩阵与实现证据。`;
+    el('legend').innerHTML = '<span class="key"><span class="swatch" style="background:#28c878"></span>低误差</span><span class="key"><span class="swatch" style="background:#ff8a2a"></span>接近/超过 2°</span>';
+  } else if (layer === 'unknown') {
+    putRGBA(tex, maskToRGBA(L.unknownMask, r.size, [64, 220, 220], [20, 20, 28]), r.size);
+    el('layerCaption').textContent = '未知对应区域：这些纹素不能确认投射来源，发布校验必须扣留对应贴图。';
   } else if (layer === 'protected') {
     putRGBA(tex, maskToRGBA(L.protectedMask, r.size, [90, 160, 255], [20, 20, 28]), r.size);
     el('layerCaption').textContent = '部件归属保护层：标记 ownership 策略成功阻止跨部件/背面穿透的纹素。';

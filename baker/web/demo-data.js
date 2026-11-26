@@ -96,7 +96,7 @@
       for (let j = 0; j < rows; j++) {
         for (let i = 0; i < seg; i++) {
           const a = idx(i, j), c = idx(i + 1, j), d = idx(i + 1, j + 1), e = idx(i, j + 1);
-          b.faceTri(a, d, c); b.faceTri(a, e, d);
+          b.faceTri(a, c, d); b.faceTri(a, d, e);
         }
       }
       b.part('shell_inner');
@@ -112,7 +112,7 @@
       for (let j = 0; j < rows; j++) {
         for (let i = 0; i < seg; i++) {
           const a = iidx(i, j), c = iidx(i + 1, j), d = iidx(i + 1, j + 1), e = iidx(i, j + 1);
-          b.faceTri(a, c, d); b.faceTri(a, d, e);
+          b.faceTri(a, d, c); b.faceTri(a, e, d);
         }
       }
       return b;
@@ -198,5 +198,18 @@
     return { low: toOBJ(low, 'fold_low'), high: toOBJ(high, 'fold_high') };
   }
 
-  root.GeoBakerDemo = { groove, shell, adjacent, fold };
+  function maintenance(variant = 'baseline') {
+    const sample = root.GeoBakerSamples.maintenanceSample(variant);
+    return {
+      low: root.GeoBakerMesh.writeOBJ(sample.low),
+      high: root.GeoBakerMesh.writeOBJ(sample.high),
+      partRules: sample.partRules,
+    };
+  }
+
+  root.GeoBakerDemo = {
+    groove, shell, adjacent, fold,
+    maintenance: () => maintenance('baseline'),
+    rogue: () => maintenance('rogue'),
+  };
 })(typeof self !== 'undefined' ? self : this);
